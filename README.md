@@ -10,6 +10,7 @@ Kumpulan skrip Python sederhana untuk mempercepat alur kerja pembuatan konten vi
 4. **`cek_hook.py`** — Mengukur jumlah kata dan estimasi waktu kalimat pembuka agar padat di bawah 3 detik pertama.
 5. **`catatan_ide.py`** — Menyimpan draf ide judul dan hook video beserta catatan waktu ke file teks lokal.
 6. **`cek_judul.py`** — Mengecek panjang karakter judul agar tidak terpotong saat tampil di layar HP.
+7. **`cari_ide.py`** — Mencari dan menampilkan kembali draf ide konten yang tersimpan di file teks lokal berdasarkan kata kunci.
 
 ## Cara Menjalankan
 
