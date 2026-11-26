@@ -82,17 +82,25 @@ Tampilkan dua sub-menu sekaligus agar pengguna bisa memilih kombinasi (misal: `1
   - **Wajib Cliffhanger:** Akhir setiap part (kecuali part terakhir) harus berhenti di momen paling menegangkan + CTA menuju part selanjutnya.
   - **Wajib Hook Penyambung:** Awal Part 2 dan seterusnya dibuka dengan 1 kalimat penyambung/rekap 3 detik agar penonton baru tetap nyambung.
 - Jika `cek_hook.py` dan `cek_judul.py` tersedia, jalankan untuk memvalidasi kekuatan hook dan judul.
-- Tanyakan: **"Lanjut ke Tahap 5 (Voiceover), atau ada bagian/part naskah yang mau direvisi dulu?"**
+- Setelah naskah & ringkasan jumlah kata ditampilkan, **WAJIB tampilkan Menu Review Naskah bernomor**:
+  1. **Lanjut ke Tahap 5 (Voiceover)** — naskah sudah pas, lanjut produksi suara
+  2. **Revisi Hook / 3 Detik Pertama** — pertajam kalimat pembuka agar retensi lebih kuat
+  3. **Revisi Bagian / Part Tertentu** — perbaiki alur, detail, atau *cliffhanger* (pengguna bisa tulis contoh: `3 - Part 2`)
+  4. **Ubah Gaya Bahasa / Nuansa** — sesuaikan tempo atau rasa bahasa agar lebih pas
+  5. **Tulis Ulang Total** — buat ulang naskah dengan sudut pandang berbeda
+- Tunggu pengguna memilih angka `1–5` sebelum melangkah ke Tahap 5.
 
 ---
 
 ## TAHAP 5: Menu Voiceover (VO)
 
-Tampilkan pilihan pembuatan suara:
-1. **Voiceover Otomatis AI** — Hasilkan audio otomatis per part (`suara_part1.mp3`, `suara_part2.mp3`, dst.) menggunakan skrip TTS lokal sesuai suasana naskah. Minta pengguna memilih karakter suara: **Pria (`Ardi`)** atau **Wanita (`Gadis`)**.
-2. **Buat Voiceover Sendiri (Rekam Manual)** — Ubah naskah tiap part menjadi format *Teleprompter* lengkap dengan tanda `[JEDA]`, **kata yang ditekan**, dan arahan intonasi/tempo, lalu minta pengguna menaruh file audio rekamannya di folder proyek (misal `suara_part1.mp3`, dst.).
+Tampilkan pilihan pembuatan suara dengan kode siap pilih:
+1. **1A — Voiceover Otomatis AI (Suara Pria - `Ardi`)** — Proses semua part sekaligus (`suara_part1.mp3`, dst.)
+2. **1B — Voiceover Otomatis AI (Suara Wanita - `Gadis`)** — Proses semua part sekaligus (`suara_part1.mp3`, dst.)
+3. **1C — Voiceover Otomatis AI (Per Part / Pilih Nomor Part)** — Proses hanya part tertentu dulu
+4. **2 — Buat Voiceover Sendiri (Rekam Manual)** — Tampilkan naskah versi *Teleprompter* lengkap dengan tanda `[JEDA]`, **kata yang ditekan**, dan arahan intonasi, lalu tunggu pengguna menaruh file audio di folder proyek
 
-Tunggu pilihan pengguna dan jalankan sesuai opsi yang dipilih (untuk multi-part, tawarkan apakah mau proses semua part sekaligus atau per part).
+Tunggu pengguna membalas kode (`1A`, `1B`, `1C`, atau `2`) sebelum menjalankan proses audio.
 
 ---
 
