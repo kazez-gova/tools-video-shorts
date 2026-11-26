@@ -104,3 +104,17 @@ Tampilkan menu eksekusi akhir:
 **Penutup Otomatis (Setelah Tahap 6 selesai):**
 - Tandai tema sebagai selesai: `python catatan_ide.py status "<tema_terpilih>" selesai`
 - Tampilkan **Paket SEO Siap Upload** (Judul Final, Deskripsi 100% Bahasa Indonesia + 5 Hashtag, dan Teks Thumbnail 2–4 kata) agar bisa langsung dimasukkan ke YouTube Studio atau `yt-ai-uploader`.
+
+---
+
+## Referensi Eksekusi Skrip Lokal (Untuk Claude)
+- **Tahap 1 (Cek & Riset Bahan):**
+  - `python catatan_ide.py list`
+  - `python cari_ide.py "<topik>" 15`
+  - `python catatan_ide.py simpan-tampil "<topik>" "<tema1>" ... "<tema10>"`
+- **Tahap 4 (Jika pilih Voiceover AI):**
+  - Simpan naskah bersih ke `naskah.txt`, lalu jalankan:
+    `python main.py --vo-only --naskah-file naskah.txt --suasana <horor|misteri|edukatif|storytelling|santai|sinematik> --suara <pria|wanita> --audio suara_shorts.mp3`
+- **Tahap 6 (Jika pilih Render Lokal):**
+  - Dengan Pexels: `python main.py --render-only --audio <file_audio.mp3> --kata-kunci "<keyword_inggris>" --gaya-sub <karaoke|minimalis|tanpa> --output hasil_shorts.mp4`
+  - Dengan media/gambar AI lokal: `python main.py --render-only --audio <file_audio.mp3> --folder-media <folder> --gaya-sub <karaoke|minimalis|tanpa> --output hasil_shorts.mp4`

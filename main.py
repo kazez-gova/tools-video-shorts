@@ -1,34 +1,248 @@
-import subprocess
+import argparse
+import asyncio
+import glob
+import json
+import os
 import sys
+import urllib.parse
+import urllib.request
 
-menu = {
-    "1": ("Hitung Durasi Naskah", "hitung_durasi.py"),
-    "2": ("Pecah Naskah Jadi Per Baris", "pecah_naskah.py"),
-    "3": ("Buat Template Deskripsi & Hashtag", "template_deskripsi.py"),
-    "4": ("Cek Durasi Hook Pembuka", "cek_hook.py"),
-    "5": ("Catat Ide Konten Baru", "catatan_ide.py"),
-    "6": ("Cek Panjang Karakter Judul", "cek_judul.py"),
-    "7": ("Cari / Tampilkan Daftar Ide", "cari_ide.py"),
+import edge_tts
+import whisper
+from moviepy import (
+    AudioFileClip,
+    CompositeVideoClip,
+    ImageClip,
+    TextClip,
+    VideoFileClip,
+    concatenate_videoclips,
+)
+
+# === KONFIGURASI DEFAULT ===
+PEXELS_API_KEY = os.environ.get("PEXELS_API_KEY", "")
+FONT_PATH = "C:/Windows/Fonts/arialbd.ttf"
+TARGET_W = 1080
+TARGET_H = 1920
+
+VOICES = {
+    "pria": "id-ID-ArdiNeural",
+    "wanita": "id-ID-GadisNeural",
 }
 
-while True:
-    print("\n" + "=" * 42)
-    print("        TOOLS VIDEO SHORTS - MENU")
-    print("=" * 42)
-    for kunci, (label, _) in menu.items():
-        print(f"{kunci}. {label}")
-    print("0. Keluar")
-    print("=" * 42)
+PRESET_SUASANA = {
+    "horor": {"rate": "-10%", "pitch": "-8Hz"},
+    "misteri": {"rate": "-6%", "pitch": "-5Hz"},
+    "edukatif": {"rate": "+5%", "pitch": "+0Hz"},
+    "storytelling": {"rate": "-3%", "pitch": "-2Hz"},
+    "santai": {"rate": "+6%", "pitch": "+2Hz"},
+    "sinematik": {"rate": "-5%", "pitch": "-4Hz"},
+}
 
-    pilihan = input("Pilih nomor menu: ").strip()
 
-    if pilihan == "0":
-        print("Selesai! Sampai ketemu di project berikutnya.")
-        break
-    elif pilihan in menu:
-        label, file_skrip = menu[pilihan]
-        print(f"\n--- Menjalankan {label} ---\n")
-        subprocess.run([sys.executable, file_skrip])
-        input("\nTekan Enter untuk kembali ke menu...")
+async def _buat_suara_async(teks, file_output, voice_id, rate, pitch):
+    communicate = edge_tts.Communicate(teks, voice_id, rate=rate, pitch=pitch)
+    await communicate.save(file_output)
+
+
+def buat_suara(teks, file_output="suara_shorts.mp3", gender="pria", suasana="edukatif"):
+    voice_id = VOICES.get(gender.lower(), VOICES["pria"])
+    preset = PRESET_SUASANA.get(suasana.lower(), PRESET_SUASANA["edukatif"])
+    print(f"[VO AI] Membuat audio ({voice_id}, rate={preset['rate']}, pitch={preset['pitch']})...")
+    asyncio.run(_buat_suara_async(teks, file_output, voice_id, preset["rate"], preset["pitch"]))
+    print(f"[VO AI] Selesai -> {file_output}")
+    return file_output
+
+
+def cari_dan_download_video(kata_kunci, jumlah=4):
+    if not PEXELS_API_KEY:
+        print("[ERROR] PEXELS_API_KEY belum diatur. Gunakan --folder-media untuk video/gambar lokal.")
+        sys.exit(1)
+
+    query = urllib.parse.quote(kata_kunci)
+    url = f"https://api.pexels.com/videos/search?query={query}&orientation=portrait&per_page={jumlah}"
+    req = urllib.request.Request(url, headers={"Authorization": PEXELS_API_KEY, "User-Agent": "Mozilla/5.0"})
+    with urllib.request.urlopen(req, timeout=15) as resp:
+        data = json.loads(resp.read().decode("utf-8"))
+
+    file_videos = []
+    for idx, vid in enumerate(data.get("videos", [])):
+        files = vid.get("video_files", [])
+        if not files:
+            continue
+        files_sorted = sorted(files, key=lambda x: x.get("height", 0), reverse=True)
+        link = files_sorted[0]["link"]
+        out_name = f"clip_{idx}.mp4"
+        print(f"[PEXELS] Mengunduh {out_name}...")
+        urllib.request.urlretrieve(link, out_name)
+        file_videos.append(out_name)
+    return file_videos
+
+
+def muat_media_lokal(folder_media):
+    ekstensi = ("*.mp4", "*.mov", "*.mkv", "*.jpg", "*.jpeg", "*.png", "*.webp")
+    daftar = []
+    for ext in ekstensi:
+        daftar.extend(sorted(glob.glob(os.path.join(folder_media, ext))))
+    return daftar
+
+
+def buat_subtitle_whisper(file_audio, kata_per_baris=3):
+    print("[WHISPER] Mentranskripsi audio untuk subtitle...")
+    model = whisper.load_model("base")
+    result = model.transcribe(file_audio, language="id", word_timestamps=True)
+
+    list_sub = []
+    for seg in result.get("segments", []):
+        words = seg.get("words", [])
+        if not words:
+            list_sub.append({"text": seg["text"].strip(), "start": seg["start"], "end": seg["end"]})
+            continue
+        for i in range(0, len(words), kata_per_baris):
+            chunk = words[i : i + kata_per_baris]
+            teks = " ".join(w["word"].strip() for w in chunk).strip()
+            if teks:
+                list_sub.append({
+                    "text": teks,
+                    "start": chunk[0]["start"],
+                    "end": chunk[-1]["end"],
+                })
+    return list_sub
+
+
+def siapkan_klip_vertikal(path_media, durasi_gambar=4.0):
+    ext = os.path.splitext(path_media)[1].lower()
+    if ext in (".jpg", ".jpeg", ".png", ".webp"):
+        clip = ImageClip(path_media).with_duration(durasi_gambar)
     else:
-        print("Pilihan tidak valid, coba masukkan angka 0-7.")
+        clip = VideoFileClip(path_media).without_audio()
+
+    rasio_target = TARGET_W / TARGET_H
+    rasio_asal = clip.w / clip.h
+    if rasio_asal > rasio_target:
+        clip = clip.resized(height=TARGET_H)
+    else:
+        clip = clip.resized(width=TARGET_W)
+
+    clip = clip.cropped(
+        x_center=clip.w / 2,
+        y_center=clip.h / 2,
+        width=TARGET_W,
+        height=TARGET_H,
+    )
+    return clip
+
+
+def render_video(file_audio, list_media, list_sub, file_output="hasil_shorts.mp4", gaya_sub="karaoke"):
+    print(f"[RENDER] Menyusun video -> {file_output} (gaya subtitle: {gaya_sub})")
+    audio = AudioFileClip(file_audio)
+    durasi_audio = audio.duration
+
+    klip_dasar = [siapkan_klip_vertikal(m) for m in list_media]
+    if not klip_dasar:
+        print("[ERROR] Tidak ada file media untuk dirender.")
+        sys.exit(1)
+
+    klip_terkumpul = []
+    total_durasi = 0.0
+    idx = 0
+    while total_durasi < durasi_audio:
+        c = klip_dasar[idx % len(klip_dasar)]
+        klip_terkumpul.append(c)
+        total_durasi += c.duration
+        idx += 1
+
+    video_final = concatenate_videoclips(klip_terkumpul, method="compose")
+    video_final = video_final.subclipped(0, durasi_audio).with_audio(audio)
+
+    layers = [video_final]
+    if gaya_sub != "tanpa" and list_sub:
+        for item in list_sub:
+            dur = max(0.1, item["end"] - item["start"])
+            if gaya_sub == "minimalis":
+                txt_clip = TextClip(
+                    text=item["text"],
+                    font=FONT_PATH,
+                    font_size=54,
+                    color="white",
+                    stroke_color="black",
+                    stroke_width=2,
+                    method="caption",
+                    size=(TARGET_W - 160, None),
+                ).with_start(item["start"]).with_duration(dur).with_position(("center", int(TARGET_H * 0.78)))
+            else:  # karaoke
+                txt_clip = TextClip(
+                    text=item["text"].upper(),
+                    font=FONT_PATH,
+                    font_size=75,
+                    color="yellow",
+                    stroke_color="black",
+                    stroke_width=4,
+                    method="caption",
+                    size=(TARGET_W - 120, None),
+                ).with_start(item["start"]).with_duration(dur).with_position(("center", int(TARGET_H * 0.72)))
+            layers.append(txt_clip)
+
+    final = CompositeVideoClip(layers)
+    final.write_videofile(file_output, fps=30, codec="libx264", audio_codec="aac")
+    print(f"[SELESAI] Video berhasil dirender: {os.path.abspath(file_output)}")
+
+
+def parse_args():
+    parser = argparse.ArgumentParser(description="Tools Produksi & Render YouTube Shorts Lokal")
+    parser.add_argument("--vo-only", action="store_true", help="Hanya membuat Voiceover AI (Tahap 4)")
+    parser.add_argument("--render-only", action="store_true", help="Hanya merender video dari audio yang sudah ada (Tahap 6)")
+    parser.add_argument("--naskah", type=str, default="", help="Teks naskah langsung")
+    parser.add_argument("--naskah-file", type=str, default="", help="Path file teks berisi naskah")
+    parser.add_argument("--suasana", type=str, default="edukatif", choices=list(PRESET_SUASANA.keys()))
+    parser.add_argument("--suara", type=str, default="pria", choices=list(VOICES.keys()))
+    parser.add_argument("--audio", type=str, default="suara_shorts.mp3", help="File audio input/output")
+    parser.add_argument("--kata-kunci", type=str, default="", help="Kata kunci pencarian video Pexels")
+    parser.add_argument("--folder-media", type=str, default="", help="Folder berisi video/gambar lokal (opsional pengganti Pexels)")
+    parser.add_argument("--jumlah-klip", type=int, default=4, help="Jumlah klip Pexels yang diunduh")
+    parser.add_argument("--gaya-sub", type=str, default="karaoke", choices=["karaoke", "minimalis", "tanpa"])
+    parser.add_argument("--output", type=str, default="hasil_shorts.mp4", help="Nama file MP4 hasil render")
+    return parser.parse_args()
+
+
+if __name__ == "__main__":
+    # Kompatibilitas lama: python main.py "<naskah>" "<kata_kunci>" [output.mp4]
+    if len(sys.argv) >= 3 and not sys.argv[1].startswith("--"):
+        naskah_arg = sys.argv[1]
+        kunci_arg = sys.argv[2]
+        out_arg = sys.argv[3] if len(sys.argv) >= 4 else "hasil_shorts.mp4"
+        audio_path = buat_suara(naskah_arg)
+        media = cari_dan_download_video(kunci_arg)
+        subs = buat_subtitle_whisper(audio_path)
+        render_video(audio_path, media, subs, file_output=out_arg)
+        sys.exit(0)
+
+    args = parse_args()
+
+    teks_naskah = args.naskah
+    if args.naskah_file and os.path.exists(args.naskah_file):
+        with open(args.naskah_file, "r", encoding="utf-8") as f:
+            teks_naskah = f.read().strip()
+
+    if not args.render_only:
+        if not teks_naskah:
+            print("[ERROR] Masukkan --naskah atau --naskah-file untuk membuat Voiceover AI.")
+            sys.exit(1)
+        buat_suara(teks_naskah, file_output=args.audio, gender=args.suara, suasana=args.suasana)
+        if args.vo_only:
+            sys.exit(0)
+
+    if not os.path.exists(args.audio):
+        print(f"[ERROR] File audio '{args.audio}' tidak ditemukan.")
+        sys.exit(1)
+
+    if args.folder_media:
+        media_list = muat_media_lokal(args.folder_media)
+    elif args.kata_kunci:
+        media_list = cari_dan_download_video(args.kata_kunci, jumlah=args.jumlah_klip)
+    else:
+        print("[ERROR] Tentukan --kata-kunci (Pexels) atau --folder-media (aset lokal).")
+        sys.exit(1)
+
+    kata_per_baris = 3 if args.gaya_sub == "karaoke" else 6
+    subs = [] if args.gaya_sub == "tanpa" else buat_subtitle_whisper(args.audio, kata_per_baris=kata_per_baris)
+    render_video(args.audio, media_list, subs, file_output=args.output, gaya_sub=args.gaya_sub)
