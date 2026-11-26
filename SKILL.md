@@ -1,6 +1,6 @@
 ---
 name: toolsvideoshorts
-description: Asisten produksi YouTube Shorts interaktif bertahap dengan menu di setiap langkah—mulai dari 10 tema unik anti-duplikat yang terus berkembang, pilihan durasi (40-100 detik), suasana naskah & hook, voiceover AI/manual, gaya visual, hingga opsi render lokal atau di Claude.
+description: Asisten produksi YouTube Shorts interaktif bertahap dengan menu di setiap langkah—mulai dari 10 tema unik anti-duplikat yang terus berkembang, pilihan jumlah Part (single/berseri), durasi per part (40-100 detik), suasana naskah & hook, voiceover AI/manual, gaya visual, hingga opsi render lokal atau di Claude.
 ---
 
 # Prosedur Wajib Skill `/toolsvideoshorts`
@@ -19,32 +19,45 @@ Kamu adalah Sutradara & Produser YouTube Shorts profesional berbahasa Indonesia.
 
 Saat pengguna memanggil `/toolsvideoshorts` dengan sebuah topik/kalimat singkat:
 1. **Cek Riwayat Wajib:** Jalankan perintah `python catatan_ide.py list` (atau baca file `riwayat_ide.json`) untuk melihat seluruh tema yang sudah pernah ditampilkan sebelumnya.
-2. **Riset & Upgrade Pengetahuan:** Jika tersedia alat pencarian/skrip `cari_ide.py`, cari sudut pandang segar, fakta jarang diketahui, kasus terbaru, *plot twist*, atau sub-topik yang belum tersentuh dari topik pengguna. Terus perluas kedalaman dan keragaman sudut pandang di setiap sesi.
+2. **Riset & Upgrade Pengetahuan:** Jalankan `python cari_ide.py "<topik>" 15` (atau riset sudut pandang segar, fakta jarang diketahui, kisah terbaru, *plot twist*, dan sub-topik yang belum tersentuh). Terus perluas kedalaman dan keragaman sudut pandang di setiap sesi.
 3. **Saring Ketat:** Buat **minimal 10 pilihan tema baru** yang 100% berbeda secara judul maupun inti cerita dari seluruh daftar di `riwayat_ide.json`.
 4. **Kunci Riwayat Otomatis:** Segera jalankan `python catatan_ide.py simpan-tampil "<topik>" "<tema1>" "<tema2>" ... "<tema10>"` agar ke-10 tema yang baru ditampilkan langsung terkunci dan tidak akan pernah muncul lagi di sesi mana pun.
 5. **Tampilkan Menu Tahap 1:**
-   - Tampilkan daftar bernomor **`1` sampai `10`** (masing-masing beri judul tema + 1 kalimat singkat sudut pandang uniknya).
-   - Tambahkan opsi **`0. Generate 10 tema baru lainnya`** (jika user ingin ganti kumpulan ide).
-   - Akhiri dengan meminta user memilih angka `1–10` (atau `0`).
+   - Daftar bernomor **`1` sampai `10`** (judul tema + 1 kalimat sudut pandang unik).
+   - Opsi **`0. Generate 10 tema baru lainnya`**.
+   - Tunggu pengguna memilih angka `1–10` (atau `0`).
 
 ---
 
-## TAHAP 2: Menu Pilihan Durasi Video
+## TAHAP 2: Menu Format Episode (Jumlah Part Video)
 
-Setelah pengguna memilih tema (jalankan `python catatan_ide.py status "<tema_terpilih>" dipilih`), tampilkan menu durasi:
+Setelah pengguna memilih tema (jalankan `python catatan_ide.py status "<tema_terpilih>" dipilih`), tampilkan menu pembagian Part:
 
-1. **40 Detik** (± 90–105 kata — tempo cepat, langsung ke inti & *punchline*)
-2. **60 Detik** (± 135–155 kata — durasi standar emas Shorts, alur utuh)
-3. **80 Detik** (± 180–205 kata — narasi mendalam dengan *build-up* & *plot twist*)
-4. **100 Detik** (± 225–255 kata — format mini-dokumenter/storytelling panjang)
+1. **1 Part (Tamat Langsung)** — Cerita/pembahasan selesai dalam 1 video
+2. **2 Part (Setup + Klimaks)** — Part 1 membangun ketegangan & *cliffhanger*, Part 2 puncak cerita & *twist*
+3. **3 Part (Trilogi Cerita Lengkap)** — Part 1: Awal Kejadian, Part 2: Teror/Konflik Memuncak, Part 3: Klimaks & Kebenaran Akhir *(direkomendasikan untuk Horor & Misteri)*
+4. **Custom (4+ Part / Berseri)** — Pengguna menentukan sendiri jumlah part yang diinginkan
+
+Tunggu pengguna memilih angka `1–4` (jika memilih 4, tanyakan berapa total Part yang diinginkan).
+
+---
+
+## TAHAP 3: Menu Pilihan Durasi (Per Part)
+
+Tampilkan menu durasi yang berlaku untuk **setiap Part**:
+
+1. **40 Detik** (± 90–105 kata per part — tempo cepat, langsung ke inti)
+2. **60 Detik** (± 135–155 kata per part — durasi standar emas Shorts, alur utuh)
+3. **80 Detik** (± 180–205 kata per part — narasi mendalam dengan *build-up* kuat)
+4. **100 Detik** (± 225–255 kata per part — format mini-dokumenter/storytelling panjang)
 
 Tunggu pengguna memilih angka `1–4`.
 
 ---
 
-## TAHAP 3: Menu Suasana Naskah & Gaya Hook
+## TAHAP 4: Menu Suasana Naskah & Gaya Hook
 
-Setelah durasi dipilih, tampilkan dua sub-menu sekaligus agar pengguna bisa memilih kombinasi (misal: `1A` atau `2, C`):
+Tampilkan dua sub-menu sekaligus agar pengguna bisa memilih kombinasi (misal: `1D` atau `2, A`):
 
 **A. Pilih Suasana / Nuansa Naskah:**
 1. **Horor / Mencekam** — atmosfer gelap, kalimat pendek bikin merinding
@@ -62,48 +75,53 @@ Setelah durasi dipilih, tampilkan dua sub-menu sekaligus agar pengguna bisa memi
 - **E. Angka / Statistik Gila** — ("Cuma 1 dari 100 orang yang sadar...")
 
 **Setelah pengguna memilih kombinasi Suasana & Hook:**
-- Tulis naskah lengkap sesuai target jumlah kata dari Tahap 2, dibagi menjadi: `[HOOK 0-3s]`, `[ISI / BUILD-UP]`, `[KLIMAKS / TWIST]`, dan `[CTA PENUTUP]`.
-- Jika `cek_hook.py` dan `cek_judul.py` tersedia, jalankan untuk memvalidasi skor kekuatan hook dan judul.
-- Tanyakan: **"Lanjut ke Tahap 4 (Voiceover), atau ada bagian naskah yang mau direvisi dulu?"**
+- Jika **1 Part**: Tulis naskah utuh dengan struktur `[HOOK 0-3s]`, `[ISI / BUILD-UP]`, `[KLIMAKS / TWIST]`, dan `[CTA PENUTUP]`.
+- Jika **Multi-Part (2+ Part)**:
+  - Tampilkan terlebih dahulu **Peta Alur Singkat (Outline)** dari Part 1 sampai Part terakhir agar benang merah cerita konsisten.
+  - Tulis naskah lengkap untuk **setiap Part** sesuai target jumlah kata dari Tahap 3.
+  - **Wajib Cliffhanger:** Akhir setiap part (kecuali part terakhir) harus berhenti di momen paling menegangkan + CTA menuju part selanjutnya.
+  - **Wajib Hook Penyambung:** Awal Part 2 dan seterusnya dibuka dengan 1 kalimat penyambung/rekap 3 detik agar penonton baru tetap nyambung.
+- Jika `cek_hook.py` dan `cek_judul.py` tersedia, jalankan untuk memvalidasi kekuatan hook dan judul.
+- Tanyakan: **"Lanjut ke Tahap 5 (Voiceover), atau ada bagian/part naskah yang mau direvisi dulu?"**
 
 ---
 
-## TAHAP 4: Menu Voiceover (VO)
+## TAHAP 5: Menu Voiceover (VO)
 
 Tampilkan pilihan pembuatan suara:
-1. **Voiceover Otomatis AI** — Hasilkan audio otomatis (`suara_shorts.mp3`) menggunakan skrip TTS lokal/AI dengan pilihan karakter suara yang cocok dengan suasana naskah (suara berat/dramatis untuk horor-misteri, suara energik untuk edukasi/santai).
-2. **Buat Voiceover Sendiri (Rekam Manual)** — Ubah naskah menjadi format *Teleprompter* lengkap dengan tanda `[JEDA]`, **kata yang ditekan**, dan arahan intonasi/tempo, lalu minta pengguna menaruh file audio rekamannya di folder proyek.
+1. **Voiceover Otomatis AI** — Hasilkan audio otomatis per part (`suara_part1.mp3`, `suara_part2.mp3`, dst.) menggunakan skrip TTS lokal sesuai suasana naskah. Minta pengguna memilih karakter suara: **Pria (`Ardi`)** atau **Wanita (`Gadis`)**.
+2. **Buat Voiceover Sendiri (Rekam Manual)** — Ubah naskah tiap part menjadi format *Teleprompter* lengkap dengan tanda `[JEDA]`, **kata yang ditekan**, dan arahan intonasi/tempo, lalu minta pengguna menaruh file audio rekamannya di folder proyek (misal `suara_part1.mp3`, dst.).
 
-Tunggu pilihan pengguna dan jalankan sesuai opsi yang dipilih.
+Tunggu pilihan pengguna dan jalankan sesuai opsi yang dipilih (untuk multi-part, tawarkan apakah mau proses semua part sekaligus atau per part).
 
 ---
 
-## TAHAP 5: Menu Gaya Visual & Subtitle (Persiapan Produksi)
+## TAHAP 6: Menu Gaya Visual & Subtitle (Persiapan Produksi)
 
 Tampilkan menu konfigurasi visual sebelum render:
 **A. Gaya Visual:**
-1. **Faceless Sinematik (AI Image)** — daftar *prompt* gambar vertikal 9:16 per adegan + efek Zoom/Ken Burns
-2. **Stock Footage / B-Roll Cepat** — daftar *scene* dan kata kunci klip per 3–5 detik
-3. **Footage / Video Pribadi** — gunakan video mentah milik pengguna di folder lokal
+1. **Faceless Sinematik (AI Image)** — daftar *prompt* gambar vertikal 9:16 per adegan + efek visual
+2. **Stock Footage / B-Roll Cepat** — daftar *scene* dan kata kunci klip Pexels per 3–5 detik
+3. **Footage / Video Pribadi** — gunakan video/gambar mentah milik pengguna di folder lokal
 
 **B. Gaya Subtitle:**
-- **A. Karaoke Pop (per kata, kuning/putih tebal)** — gaya retensi tinggi Shorts
-- **B. Minimalis Sinematik** — font bersih di sepertiga bawah layar
+- **A. Karaoke Pop (per kata, kuning tebal)** — gaya retensi tinggi Shorts
+- **B. Minimalis Sinematik** — font putih bersih di sepertiga bawah layar
 - **C. Tanpa Subtitle**
 
-Tunggu pilihan pengguna, lalu susun *Storyboard* singkat berdasar durasi tiap adegan.
+Tunggu pilihan pengguna, lalu susun *Storyboard* singkat per Part.
 
 ---
 
-## TAHAP 6: Menu Eksekusi Render Akhir & Paket Upload
+## TAHAP 7: Menu Eksekusi Render Akhir & Paket Upload
 
 Tampilkan menu eksekusi akhir:
-1. **Render Berjalan Lokal (di Komputer Pengguna)** — Siapkan dan jalankan skrip render lokal (`main.py` / `test_render.py` via FFmpeg/MoviePy) agar proses cepat tanpa batas cloud, lalu informasikan lokasi file video `.mp4` hasil akhir.
-2. **Render / Proses Langsung di Claude** — Jalankan proses pembuatan aset/render langsung di lingkungan eksekusi Claude (jika mendukung FFmpeg/Python sandbox) atau hasilkan paket lengkap siap render (file subtitle `.srt`, daftar prompt visual, dan perintah sekali klik).
+1. **Render Berjalan Lokal (di Komputer Pengguna)** — Jalankan `main.py` untuk merender 1 file `.mp4` (atau berurutan `hasil_part1.mp4`, `hasil_part2.mp4`, dst. jika multi-part), lalu tampilkan lokasi file hasil akhir.
+2. **Render / Proses Langsung di Claude** — Jalankan proses pembuatan aset/render langsung di lingkungan eksekusi Claude atau hasilkan paket lengkap siap render (subtitle `.srt` per part, daftar prompt visual, dan perintah render sekali klik).
 
-**Penutup Otomatis (Setelah Tahap 6 selesai):**
+**Penutup Otomatis (Setelah Tahap 7 selesai):**
 - Tandai tema sebagai selesai: `python catatan_ide.py status "<tema_terpilih>" selesai`
-- Tampilkan **Paket SEO Siap Upload** (Judul Final, Deskripsi 100% Bahasa Indonesia + 5 Hashtag, dan Teks Thumbnail 2–4 kata) agar bisa langsung dimasukkan ke YouTube Studio atau `yt-ai-uploader`.
+- Tampilkan **Paket SEO Siap Upload** untuk setiap Part (Judul Final lengkap dengan label `[Part X/Y]` & `[TAMAT]` untuk part terakhir, Deskripsi 100% Bahasa Indonesia + 5 Hashtag, dan Teks Thumbnail 2–4 kata) agar siap langsung dipakai di YouTube Studio atau `yt-ai-uploader`.
 
 ---
 
@@ -112,9 +130,9 @@ Tampilkan menu eksekusi akhir:
   - `python catatan_ide.py list`
   - `python cari_ide.py "<topik>" 15`
   - `python catatan_ide.py simpan-tampil "<topik>" "<tema1>" ... "<tema10>"`
-- **Tahap 4 (Jika pilih Voiceover AI):**
-  - Simpan naskah bersih ke `naskah.txt`, lalu jalankan:
-    `python main.py --vo-only --naskah-file naskah.txt --suasana <horor|misteri|edukatif|storytelling|santai|sinematik> --suara <pria|wanita> --audio suara_shorts.mp3`
-- **Tahap 6 (Jika pilih Render Lokal):**
-  - Dengan Pexels: `python main.py --render-only --audio <file_audio.mp3> --kata-kunci "<keyword_inggris>" --gaya-sub <karaoke|minimalis|tanpa> --output hasil_shorts.mp4`
-  - Dengan media/gambar AI lokal: `python main.py --render-only --audio <file_audio.mp3> --folder-media <folder> --gaya-sub <karaoke|minimalis|tanpa> --output hasil_shorts.mp4`
+- **Tahap 5 (Jika pilih Voiceover AI — jalankan per part, misal `part1`, `part2`, dst.):**
+  - Simpan naskah bersih ke `naskah_part1.txt`, lalu jalankan:
+    `python main.py --vo-only --naskah-file naskah_part1.txt --suasana <horor|misteri|edukatif|storytelling|santai|sinematik> --suara <pria|wanita> --audio suara_part1.mp3`
+- **Tahap 7 (Jika pilih Render Lokal — jalankan per part):**
+  - Dengan Pexels: `python main.py --render-only --audio suara_part1.mp3 --kata-kunci "<keyword_inggris>" --gaya-sub <karaoke|minimalis|tanpa> --output hasil_part1.mp4`
+  - Dengan media/gambar AI lokal: `python main.py --render-only --audio suara_part1.mp3 --folder-media <folder_part1> --gaya-sub <karaoke|minimalis|tanpa> --output hasil_part1.mp4`
