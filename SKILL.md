@@ -1,6 +1,6 @@
 ---
 name: toolsvideoshorts
-description: Hub produksi YouTube Shorts interaktif bertahap dengan menu di setiap langkah—10 tema unik anti-duplikat, format single/multi-part, durasi per part, suasana & hook, review naskah, voiceover AI/manual, 15 style video kreator (termasuk handoff ke videostorytelling3d), hingga render dan paket upload ke yt-ai-uploader.
+description: Hub produksi YouTube Shorts interaktif bertahap dengan menu di setiap langkah—10 tema unik anti-duplikat, format single/multi-part, durasi per part, suasana & hook, review naskah, voiceover AI/manual, 15 style video kreator (termasuk handoff ke visual-storytelling-3d), hingga render dan paket upload ke yt-ai-uploader.
 ---
 
 # Prosedur Wajib Skill `/toolsvideoshorts`
@@ -88,7 +88,7 @@ Tampilkan dua sub-menu sekaligus agar pengguna bisa memilih kombinasi (misal: `1
   3. **Revisi Bagian / Part Tertentu** — perbaiki alur, detail, atau *cliffhanger* (contoh: `3 - Part 2`)
   4. **Ubah Gaya Bahasa / Nuansa** — sesuaikan tempo atau rasa bahasa
   5. **Tulis Ulang Total** — rombak naskah dengan sudut pandang berbeda
-  6. **Langsung Kirim Naskah ke `videostorytelling3d`** — lewati VO lokal dan ekspor naskah final langsung ke proyek 3D Storytelling
+  6. **Langsung Kirim Naskah ke `visual-storytelling-3d`** — lewati VO lokal dan ekspor naskah final langsung ke proyek 3D Storytelling
 - Tunggu pengguna memilih angka `1–6`.
 
 ---
@@ -110,7 +110,7 @@ Tunggu pengguna membalas kode (`1A`, `1B`, `1C`, atau `2`) sebelum menjalankan p
 Berdasarkan Topik, Jumlah Part, dan Suasana dari tahap sebelumnya, **WAJIB beri tanda `⭐ Rekomendasi` pada 2–3 style yang paling cocok**, lalu tampilkan seluruh menu 15 style ini (pengguna boleh memilih 1 angka atau menggabungkan 2 style, misal `5 + 7`):
 
 **A. Animasi & 3D:**
-1. **3D Storytelling (Remotion)** — visual 3D ala dokumenter/edukasi presisi *(handoff ke `videostorytelling3d`)*
+1. **3D Storytelling (Remotion)** — visual 3D ala dokumenter/edukasi presisi *(handoff ke `visual-storytelling-3d`)*
 2. **Anime / 2D Ilustrasi** — ilustrasi anime/Ghibli/semi-realistis konsisten + *pan/zoom* halus
 3. **Komik / Manga / Stickman** — panel komik, *webtoon*, atau *doodle/stickman explainer*
 4. **Claymation / Miniatur 3D** — gaya tanah liat (*stop-motion clay*) atau dunia miniatur
@@ -147,7 +147,7 @@ Tunggu pilihan kombinasi pengguna (misal `1A` atau `5B`), lalu susun *Storyboard
 
 Tampilkan menu eksekusi akhir sesuai style yang dipilih di Tahap 6:
 1. **Render Lokal via `main.py`** — Render `.mp4` langsung di PC (`hasil_part1.mp4`, dst.) untuk style berbasis AI Image, Pexels, atau Footage Lokal.
-2. **Handoff ke `videostorytelling3d` / Remotion** — Ekspor `paket_produksi.json` (naskah, storyboard, scene, dan audio VO) ke proyek `videostorytelling3d` untuk render gaya 3D/Motion Graphic/Chat/Map.
+2. **Handoff ke `visual-storytelling-3d` / Remotion** — Ekspor `paket_produksi.json` (naskah, storyboard, scene, dan audio VO) ke proyek `visual-storytelling-3d` untuk render gaya 3D/Motion Graphic/Chat/Map.
 3. **Proses / Paket Siap Render di Claude** — Hasilkan paket lengkap siap pakai (daftar prompt visual 9:16 per adegan, file `.srt` per part, dan perintah render sekali klik).
 
 **Penutup Otomatis (Setelah Tahap 7 selesai):**
@@ -170,3 +170,7 @@ Tampilkan menu eksekusi akhir sesuai style yang dipilih di Tahap 6:
 - **Tahap 7 (Render Lokal via `main.py` per part):**
   - Pexels: `python main.py --render-only --audio suara_part1.mp3 --kata-kunci "<keyword_inggris>" --gaya-sub <karaoke|minimalis|tanpa> --output hasil_part1.mp4`
   - Media/Gambar AI lokal: `python main.py --render-only --audio suara_part1.mp3 --folder-media <folder_part1> --gaya-sub <karaoke|minimalis|tanpa> --output hasil_part1.mp4`
+- **Handoff ke `visual-storytelling-3d` (Tahap 4 opsi 6 / Tahap 7 opsi 2):**
+  - `python jembatan_produksi.py ke-3d --part 1`
+- **Handoff ke `yt-ai-uploader` (Penutup opsi 1):**
+  - `python jembatan_produksi.py ke-uploader --part 1`
