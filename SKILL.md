@@ -169,7 +169,8 @@ Tampilkan menu eksekusi akhir sesuai style yang dipilih di Tahap 6:
   - `python main.py --vo-only --naskah-file naskah_part1.txt --suasana <horor|misteri|edukatif|storytelling|santai|sinematik> --suara <pria|wanita> --audio suara_part1.mp3`
 - **Tahap 7 (Render Lokal via `main.py` per part):**
   - Pexels: `python main.py --render-only --audio suara_part1.mp3 --kata-kunci "<keyword_inggris>" --gaya-sub <karaoke|minimalis|tanpa> --output hasil_part1.mp4`
-  - Media/Gambar AI lokal: `python main.py --render-only --audio suara_part1.mp3 --folder-media <folder_part1> --gaya-sub <karaoke|minimalis|tanpa> --output hasil_part1.mp4`
+  - Media/Gambar AI lokal (dengan Style 1-15 & BGM opsional): `python main.py --render-only --audio suara_part1.mp3 --folder-media <folder_part1> --style <1..15> --gaya-sub <karaoke|minimalis|tanpa> --output hasil_part1.mp4`
+  - Mode Split-Screen (Style 9): `python main.py --render-only --audio suara_part1.mp3 --folder-media <folder_part1> --style 9 --split-bawah <gameplay.mp4> --gaya-sub karaoke --output hasil_part1.mp4`
 - **Handoff ke `visual-storytelling-3d` (Tahap 4 opsi 6 / Tahap 7 opsi 2):**
   - `python jembatan_produksi.py ke-3d --part 1`
 - **Handoff ke `yt-ai-uploader` (Penutup opsi 1):**
