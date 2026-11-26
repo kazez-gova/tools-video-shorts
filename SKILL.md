@@ -99,7 +99,8 @@ Tampilkan pilihan pembuatan suara dengan kode siap pilih:
 1. **1A — Voiceover Otomatis AI (Suara Pria - `Ardi`)** — Proses semua part sekaligus (`suara_part1.mp3`, dst.)
 2. **1B — Voiceover Otomatis AI (Suara Wanita - `Gadis`)** — Proses semua part sekaligus (`suara_part1.mp3`, dst.)
 3. **1C — Voiceover Otomatis AI (Per Part / Pilih Nomor Part)** — Proses hanya part tertentu dulu
-4. **2 — Buat Voiceover Sendiri (Rekam Manual)** — Tampilkan naskah versi *Teleprompter* lengkap dengan tanda `[JEDA]`, **kata yang ditekan**, dan arahan intonasi, lalu tunggu pengguna menaruh file audio di folder proyek
+4. **1D — Voiceover Eksternal ElevenLabs** — Tampilkan naskah versi ElevenLabs dengan tanda jeda dramatis, lalu tunggu pengguna menaruh file `suara_part1.mp3` di folder proyek
+5. **2 — Buat Voiceover Sendiri (Rekam Manual)** — Tampilkan naskah versi *Teleprompter* lengkap dengan tanda `[JEDA]`, **kata yang ditekan**, dan arahan intonasi, lalu tunggu pengguna menaruh file audio di folder proyek
 
 Tunggu pengguna membalas kode (`1A`, `1B`, `1C`, atau `2`) sebelum menjalankan proses audio.
 

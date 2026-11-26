@@ -186,7 +186,7 @@ def render_video(
         tmp_atas = "_tmp_atas.mp4"
         tmp_split = "_tmp_split.mp4"
         tmp_files.extend([tmp_atas, tmp_split])
-        video_final.write_videofile(tmp_atas, fps=30, codec="libx264", audio=False)
+        video_final.write_videofile(tmp_atas, fps=30, codec="libx264", audio=False, preset="veryfast", threads=4)
         gabung_split_screen(tmp_atas, split_bawah, tmp_split)
         video_final = VideoFileClip(tmp_split).subclipped(0, durasi_audio)
 
@@ -236,7 +236,7 @@ def render_video(
     tmp_files.append(tmp_mentah)
 
     final = CompositeVideoClip(layers)
-    final.write_videofile(tmp_mentah, fps=30, codec="libx264", audio_codec="aac")
+    final.write_videofile(tmp_mentah, fps=30, codec="libx264", audio_codec="aac", preset="veryfast", threads=4)
     final.close()
 
     print(f"[POST-FX] Menerapkan efek visual & normalisasi audio Style #{style_id}...")
